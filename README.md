@@ -1,10 +1,10 @@
 # ICPE 2026 Data Challenge - Shaved Ice Dataset Analysis
 
-**Project Deadline:** January 28, 2026  
+**Deadline:** January 28, 2026  
 **Status:** Ready for data exploration
 
 ## Overview
-This project analyzes Snowflake's "Shaved Ice" VM demand dataset for the ICPE 2026 Data Challenge. We use **dbt + DuckDB** for data transformations and **Python** for forecasting analysis.
+This project analyzes Snowflake's "Shaved Ice" VM demand dataset for the ICPE 2026 Data Challenge. It uses **dbt + DuckDB** for data transformations and **Python** for forecasting analysis.
 
 ## Tech Stack
 - **Data Engineering:** dbt-duckdb (SQL transformations)
@@ -12,46 +12,46 @@ This project analyzes Snowflake's "Shaved Ice" VM demand dataset for the ICPE 20
 - **Analysis:** Python (pandas, statsmodels)
 - **Visualization:** matplotlib, seaborn
 
-## Quick Start
+## Getting Started
 
-> **Important:** All commands should be run from the project root directory:
-> `c:\Users\hecto\OneDrive\Documents\School\Data Science\AntiGravity\Python Projects\Shaved Ice`
+> **Note:** Run all commands from the project root directory.
 
-### Step 1: Open Terminal in Project Folder
-1. Open VS Code or your terminal
-2. Navigate to the project:
-   ```powershell
-   cd "c:\Users\hecto\OneDrive\Documents\School\Data Science\AntiGravity\Python Projects\Shaved Ice"
-   ```
-
-### Step 2: Activate Virtual Environment
+### 1. Clone and Navigate
 ```powershell
-.\.venv\Scripts\Activate.ps1
+git clone https://github.com/hpena212/snowflake-shaved-ice.git
+cd snowflake-shaved-ice
 ```
-You'll see `(.venv)` in your prompt when activated.
 
-### Step 3: Download Dataset
+### 2. Set Up Your Environment
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+You'll see `(.venv)` in your prompt when the environment is active.
+
+### 3. Download the Dataset
 ```powershell
 cd data\raw
 git clone https://github.com/Snowflake-Labs/shavedice-dataset.git
 cd ..\..
 ```
 
-### Step 4: Run dbt Transformations
+### 4. Run dbt Transformations
 ```powershell
 dbt run --profiles-dir .
 ```
 This creates clean tables in `data/processed/shaved_ice.duckdb`.
 
-### Step 5: Start Jupyter
+### 5. Launch Jupyter
 ```powershell
 jupyter notebook
 ```
-Open `notebooks/01_data_exploration.ipynb` from the browser.
+Open `notebooks/01_data_exploration.ipynb` from your browser.
 
 ## Project Structure
 ```
-Shaved Ice/
+snowflake-shaved-ice/
 ├── dbt_project.yml           # dbt configuration
 ├── profiles.yml              # DuckDB connection
 ├── sql/models/               # dbt SQL models
@@ -66,15 +66,15 @@ Shaved Ice/
     └── processed/            # DuckDB database
 ```
 
-## Workflow
+## How It Works
 1. **dbt run** → Creates clean tables in DuckDB
 2. **Python** → Loads tables for forecasting analysis
 3. **Jupyter** → Interactive exploration and visualization
 
 ```python
-# Load dbt output in Python
+# Load dbt output in your Python scripts
 from src.duckdb_loader import load_mart_data
-df = load_mart_data()  # Returns clean pandas DataFrame
+df = load_mart_data()  # Returns a clean pandas DataFrame
 ```
 
 ## Research Questions
@@ -82,30 +82,31 @@ df = load_mart_data()  # Returns clean pandas DataFrame
 2. What safety stock levels minimize over/under-provisioning?
 3. How do demand patterns vary by day of week?
 
-## Key dbt Commands
+## Useful dbt Commands
 ```powershell
 # Run all models
 dbt run --profiles-dir .
 
-# Run specific model
+# Run a specific model
 dbt run --select mart_forecast_input --profiles-dir .
 
 # Test data quality
 dbt test --profiles-dir .
 
-# Generate documentation
+# Generate and view documentation
 dbt docs generate --profiles-dir .
 dbt docs serve --profiles-dir .
 ```
 
-## Checkpoints
-- [x] Project setup complete
+## Progress
+- [x] Project setup
 - [x] dbt pipeline configured
-- [ ] Dataset downloaded
-- [ ] dbt models tested
-- [ ] Exploratory data analysis
-- [ ] Forecasting models
-- [ ] Paper visualizations
+- [x] Dataset downloaded
+- [x] dbt models tested
+- [x] Exploratory data analysis
+- [x] Forecasting models
+- [x] Paper visualizations
 
-## Contact
-ICPE 2026 Data Challenge submission
+## Links
+- [ICPE 2026 Data Challenge](https://icpe2026.spec.org/data-challenge/)
+- [Shaved Ice Dataset (Snowflake Labs)](https://github.com/Snowflake-Labs/shavedice-dataset)
