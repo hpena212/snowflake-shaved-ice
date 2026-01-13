@@ -108,5 +108,5 @@ dbt docs serve --profiles-dir .
 - [x] Paper visualizations
 
 ## Links
-- [ICPE 2026 Data Challenge](https://icpe2026.spec.org/data-challenge/)
+- [ICPE 2026 Data Challenge](https://icpe2026.spec.org/tracks-and-submissions/data-challenge-track/)
 - [Shaved Ice Dataset (Snowflake Labs)](https://github.com/Snowflake-Labs/shavedice-dataset)
