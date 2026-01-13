@@ -58,3 +58,12 @@ desktop.ini
 *.bak
 *.tmp
 .cache/
+
+# Internal notes and planning docs (not for public repo)
+AntiGravity Instructions.md
+End of Day 1 Strats.md
+MASTER_PROJECT.md
+NOTEBOOK_EXPLAINER.md
+PROJECT_WORKFLOW.md
+handoff_snow.txt
+lab_notebook.md
