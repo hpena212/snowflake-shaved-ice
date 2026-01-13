@@ -1,0 +1,7 @@
+shaved_ice:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'data/processed/shaved_ice.duckdb'
+      threads: 4

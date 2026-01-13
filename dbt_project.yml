@@ -1,0 +1,16 @@
+name: 'shaved_ice'
+version: '1.0.0'
+config-version: 2
+
+profile: 'shaved_ice'
+
+model-paths: ["sql/models"]
+analysis-paths: ["sql/analyses"]
+test-paths: ["sql/tests"]
+seed-paths: ["sql/seeds"]
+macro-paths: ["sql/macros"]
+snapshot-paths: ["sql/snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"

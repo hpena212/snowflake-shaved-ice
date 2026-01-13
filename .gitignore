@@ -20,6 +20,7 @@ data/processed/
 *.csv
 *.csv.gz
 *.parquet
+*.duckdb
 
 # Jupyter
 .ipynb_checkpoints/
@@ -34,6 +35,12 @@ paper/*.toc
 paper/*.bbl
 paper/*.blg
 paper/*.synctex.gz
+
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
 
 # IDE
 .vscode/
