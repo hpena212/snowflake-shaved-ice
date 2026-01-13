@@ -251,3 +251,52 @@ def plot_grouped_bars(
         print(f"✅ Saved figure to {save_path}")
     
     return fig
+
+
+def plot_boxplot(
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    title: str,
+    figsize: Tuple[int, int] = (10, 6),
+    save_path: Optional[str] = None
+) -> plt.Figure:
+    """
+    Create a boxplot for categorical comparison.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataset
+    x_col : str
+        Categorical column for x-axis
+    y_col : str
+        Numeric column for y-axis
+    title : str
+        Plot title
+    figsize : tuple, default=(10, 6)
+        Figure size
+    save_path : str, optional
+        Path to save figure
+        
+    Returns
+    -------
+    plt.Figure
+        Matplotlib figure object
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="muted")
+    
+    ax.set_title(title, fontweight='bold')
+    ax.set_xlabel(x_col)
+    ax.set_ylabel(y_col)
+    ax.grid(True, alpha=0.3, axis='y')
+    
+    plt.tight_layout()
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"✅ Saved figure to {save_path}")
+    
+    return fig

@@ -11,8 +11,21 @@ from pathlib import Path
 from typing import Optional
 
 
-# Default database path (set by dbt profile)
-DEFAULT_DB_PATH = Path("data/processed/shaved_ice.duckdb")
+def _find_db_path() -> Path:
+    """Find the DuckDB file, checking multiple possible locations."""
+    # Try relative paths from different working directories
+    possible_paths = [
+        Path("data/processed/shaved_ice.duckdb"),           # From project root
+        Path("../data/processed/shaved_ice.duckdb"),        # From notebooks/
+        Path(__file__).parent.parent / "data/processed/shaved_ice.duckdb",  # From src/
+    ]
+    
+    for path in possible_paths:
+        if path.exists():
+            return path
+    
+    # If none found, return the project root version (will fail with helpful error)
+    return possible_paths[0]
 
 
 def get_connection(db_path: Optional[Path] = None) -> duckdb.DuckDBPyConnection:
@@ -22,15 +35,22 @@ def get_connection(db_path: Optional[Path] = None) -> duckdb.DuckDBPyConnection:
     Parameters
     ----------
     db_path : Path, optional
-        Path to DuckDB file. Defaults to data/processed/shaved_ice.duckdb
+        Path to DuckDB file. Auto-detected if not provided.
         
     Returns
     -------
     duckdb.DuckDBPyConnection
         Database connection
     """
-    path = db_path or DEFAULT_DB_PATH
-    return duckdb.connect(str(path))
+    path = db_path or _find_db_path()
+    
+    if not path.exists():
+        raise FileNotFoundError(
+            f"DuckDB file not found at {path}. "
+            "Did you run 'dbt run --profiles-dir .' first?"
+        )
+    
+    return duckdb.connect(str(path), read_only=True)
 
 
 def load_mart_data(table_name: str = "mart_forecast_input") -> pd.DataFrame:
@@ -51,10 +71,8 @@ def load_mart_data(table_name: str = "mart_forecast_input") -> pd.DataFrame:
         
     Examples
     --------
-    >>> # After running: dbt run
     >>> df = load_mart_data()
     >>> print(f"Loaded {len(df)} days of data")
-    >>> df.head()
     """
     con = get_connection()
     
@@ -102,39 +120,11 @@ def list_tables() -> list:
     -------
     list
         Table names
-        
-    Examples
-    --------
-    >>> tables = list_tables()
-    >>> print(tables)
-    ['stg_shaved_ice', 'int_daily_demand', 'mart_forecast_input']
     """
     con = get_connection()
     
     try:
         result = con.execute("SHOW TABLES").fetchall()
         return [row[0] for row in result]
-    finally:
-        con.close()
-
-
-def get_table_info(table_name: str) -> pd.DataFrame:
-    """
-    Get column information for a table.
-    
-    Parameters
-    ----------
-    table_name : str
-        Name of table
-        
-    Returns
-    -------
-    pd.DataFrame
-        Column names and types
-    """
-    con = get_connection()
-    
-    try:
-        return con.execute(f"DESCRIBE {table_name}").fetchdf()
     finally:
         con.close()

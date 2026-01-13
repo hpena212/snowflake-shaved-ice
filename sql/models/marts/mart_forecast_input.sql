@@ -1,5 +1,4 @@
 -- Model 3: Mart - Final table ready for Python forecasting
--- Clean, analysis-ready dataset with all features needed for modeling
 --
 -- Resume talking point: "Created a mart layer as the single source of truth
 -- for forecasting models, decoupling data engineering from data science"
@@ -14,6 +13,8 @@ forecast_ready AS (
     SELECT
         -- Key dimensions
         date,
+        region,
+        instance_type,
         year,
         month,
         day_of_week,
@@ -28,17 +29,16 @@ forecast_ready AS (
         daily_demand_max,
         daily_demand_min,
         daily_demand_stddev,
-        peak_hours_max,
         
         -- Lag features
         demand_lag_1d,
         demand_lag_7d,
         demand_rolling_7d_avg,
         
-        -- Safety stock metrics
-        daily_demand_stddev * 1.65 AS safety_stock_90pct,  -- 90% service level
-        daily_demand_stddev * 1.96 AS safety_stock_95pct,  -- 95% service level
-        daily_demand_stddev * 2.58 AS safety_stock_99pct,  -- 99% service level
+        -- Safety stock metrics (using z-scores for service levels)
+        COALESCE(daily_demand_stddev * 1.65, 0) AS safety_stock_90pct,
+        COALESCE(daily_demand_stddev * 1.96, 0) AS safety_stock_95pct,
+        COALESCE(daily_demand_stddev * 2.58, 0) AS safety_stock_99pct,
         
         -- Data quality
         hourly_records,
@@ -50,4 +50,4 @@ forecast_ready AS (
 )
 
 SELECT * FROM forecast_ready
-ORDER BY date
+ORDER BY date, region, instance_type

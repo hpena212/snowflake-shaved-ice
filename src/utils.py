@@ -229,3 +229,128 @@ def create_lag_features(
         df[f'{value_col}_lag_{lag}'] = df[value_col].shift(lag)
     
     return df
+
+# ---------------------------------------------------------------------------
+# Additional Feature‑Engineering Helper Functions
+# ---------------------------------------------------------------------------
+
+def rolling_mean(series: pd.Series, window: int = 7, min_periods: int = 1) -> pd.Series:
+    """Calculate a rolling (moving) mean.
+
+    Parameters
+    ----------
+    series : pd.Series
+        The numeric series to smooth.
+    window : int, default=7
+        Number of periods to include in the moving window.
+    min_periods : int, default=1
+        Minimum number of observations required to compute a value.
+
+    Returns
+    -------
+    pd.Series
+        The rolling‑mean series, aligned with the original index.
+    """
+    return series.rolling(window=window, min_periods=min_periods).mean()
+
+
+def encode_categorical(df: pd.DataFrame, columns: List[str], drop_original: bool = False) -> pd.DataFrame:
+    """One‑hot encode categorical columns.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input DataFrame.
+    columns : list of str
+        Column names to encode.
+    drop_original : bool, default=False
+        Whether to drop the original categorical columns after encoding.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with new one‑hot columns (``col__value``) added.
+    """
+    df = df.copy()
+    for col in columns:
+        # pandas.get_dummies creates a column for each category value
+        dummies = pd.get_dummies(df[col], prefix=col, dtype=int)
+        df = pd.concat([df, dummies], axis=1)
+        if drop_original:
+            df.drop(columns=[col], inplace=True)
+    return df
+
+
+def scale_numeric(df: pd.DataFrame, columns: List[str], method: str = "standard") -> pd.DataFrame:
+    """Scale numeric columns using a simple scaler.
+
+    Supported methods:
+    - "standard": (x - mean) / std
+    - "minmax": (x - min) / (max - min)
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input DataFrame.
+    columns : list of str
+        Numeric columns to scale.
+    method : str, default="standard"
+        Scaling technique.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with scaled columns (original column names are overwritten).
+    """
+    df = df.copy()
+    for col in columns:
+        if method == "standard":
+            mean = df[col].mean()
+            std = df[col].std()
+            df[col] = (df[col] - mean) / std if std != 0 else 0.0
+        elif method == "minmax":
+            min_val = df[col].min()
+            max_val = df[col].max()
+            range_val = max_val - min_val
+            df[col] = (df[col] - min_val) / range_val if range_val != 0 else 0.0
+        else:
+            raise ValueError(f"Unsupported scaling method: {method}")
+    return df
+
+# ---------------------------------------------------------------------------
+# Data Inspection and Miscellaneous Helpers
+# ---------------------------------------------------------------------------
+
+def data_audit(df: pd.DataFrame, title: str = "DATA AUDIT") -> None:
+    """
+    Perform a quick audit of the dataframe (prints to stdout).
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame to audit.
+    title : str, default='DATA AUDIT'
+        Header for the audit output.
+    """
+    print(f"=== {title} ===")
+    print(f"Rows: {df.shape[0]}, Columns: {df.shape[1]}")
+    
+    print("\n--- Info ---")
+    df.info()
+
+    if 'date' in df.columns:
+        print("\n--- Time Range ---")
+        print(f"Start: {df['date'].min()}")
+        print(f"End:   {df['date'].max()}")
+
+    # Preview unique values for categorical/id columns
+    id_cols = [col for col in df.columns if 'id' in col.lower() or 'type' in col.lower() or 'region' in col.lower()]
+    if id_cols:
+        print("\n--- Categorical/ID Previews ---")
+        for col in id_cols:
+            unique_vals = df[col].unique()
+            if len(unique_vals) <= 15:
+                print(f"{col}: {unique_vals}")
+            else:
+                print(f"{col}: {len(unique_vals)} unique values")
+    print("================\n")

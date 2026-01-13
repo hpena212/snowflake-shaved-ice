@@ -1,5 +1,4 @@
 -- Model 2: Intermediate - Daily aggregations with time features
--- Aggregates hourly data to daily granularity for forecasting
 --
 -- Resume talking point: "Built intermediate transformations with 
 -- window functions and date/time feature engineering for time series analysis"
@@ -12,8 +11,10 @@ WITH hourly_data AS (
 
 daily_agg AS (
     SELECT
-        -- Time dimensions (adjust column names based on actual schema)
+        -- Time dimension
         DATE_TRUNC('day', timestamp) AS date,
+        region,
+        instance_type,
         
         -- Demand aggregations
         SUM(demand) AS daily_demand_total,
@@ -22,15 +23,11 @@ daily_agg AS (
         MIN(demand) AS daily_demand_min,
         COUNT(*) AS hourly_records,
         
-        -- Peak hour analysis
-        MAX(CASE WHEN EXTRACT(HOUR FROM timestamp) BETWEEN 9 AND 17 
-            THEN demand ELSE 0 END) AS peak_hours_max,
-        
         -- Variance for safety stock calculations
         STDDEV(demand) AS daily_demand_stddev
 
     FROM hourly_data
-    GROUP BY DATE_TRUNC('day', timestamp)
+    GROUP BY DATE_TRUNC('day', timestamp), region, instance_type
 ),
 
 with_time_features AS (
@@ -45,12 +42,20 @@ with_time_features AS (
         -- Binary flags
         CASE WHEN EXTRACT(DOW FROM date) IN (0, 6) THEN 1 ELSE 0 END AS is_weekend,
         
-        -- Lag features for forecasting
-        LAG(daily_demand_total, 1) OVER (ORDER BY date) AS demand_lag_1d,
-        LAG(daily_demand_total, 7) OVER (ORDER BY date) AS demand_lag_7d,
+        -- Lag features (partitioned by region and instance type)
+        LAG(daily_demand_total, 1) OVER (
+            PARTITION BY region, instance_type 
+            ORDER BY date
+        ) AS demand_lag_1d,
+        
+        LAG(daily_demand_total, 7) OVER (
+            PARTITION BY region, instance_type 
+            ORDER BY date
+        ) AS demand_lag_7d,
         
         -- Rolling averages
         AVG(daily_demand_total) OVER (
+            PARTITION BY region, instance_type
             ORDER BY date 
             ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
         ) AS demand_rolling_7d_avg
@@ -59,4 +64,4 @@ with_time_features AS (
 )
 
 SELECT * FROM with_time_features
-ORDER BY date
+ORDER BY date, region, instance_type

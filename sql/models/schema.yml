@@ -2,42 +2,55 @@ version: 2
 
 models:
   - name: stg_shaved_ice
-    description: "Staging layer: Raw Shaved Ice CSV loaded into DuckDB with data quality flags"
+    description: "Staging: Raw Shaved Ice Parquet loaded with renamed columns"
     columns:
-      - name: data_quality_flag
-        description: "Row-level quality indicator: 'valid' or 'invalid'"
-        tests:
-          - accepted_values:
-              values: ['valid']
+      - name: timestamp
+        description: "Hour of the usage record (from USAGE_HOUR)"
+      - name: region
+        description: "Region identifier (from REGION_NUM)"
+      - name: instance_type
+        description: "VM instance type"
+      - name: demand
+        description: "Normalized usage/demand (from NORM_USAGE)"
 
   - name: int_daily_demand
-    description: "Intermediate layer: Hourly data aggregated to daily with time features"
+    description: "Intermediate: Hourly data aggregated to daily with time features"
     columns:
       - name: date
         description: "Date of the observation"
-        tests:
-          - unique
-          - not_null
       - name: daily_demand_total
-        description: "Total VM demand for the day"
-      - name: is_weekend
-        description: "1 if Saturday or Sunday, 0 otherwise"
+        description: "Total demand for the day"
       - name: demand_rolling_7d_avg
         description: "7-day rolling average of daily demand"
 
   - name: mart_forecast_input
-    description: "Mart layer: Final analysis-ready table for Python forecasting models"
+    description: "Mart: Final analysis-ready table for Python forecasting"
     columns:
       - name: date
         description: "Date of the observation"
         tests:
-          - unique
           - not_null
       - name: demand
-        description: "Target variable: total daily VM demand"
+        description: "Target variable: total daily demand"
         tests:
           - not_null
       - name: safety_stock_95pct
-        description: "Safety stock buffer for 95% service level (1.96 * std dev)"
-      - name: complete_day_flag
-        description: "1 if all 24 hourly records present, 0 otherwise"
+        description: "Safety stock buffer for 95% service level"
+
+  - name: mart_stockout_events
+    description: "Mart: Records of days where demand exceeded a defined capacity limit (p95 level)"
+    columns:
+      - name: date
+        description: "Date of the stockout event"
+      - name: region
+        description: "Region where the event occurred"
+      - name: instance_type
+        description: "Type of instance"
+      - name: demand
+        description: "Total daily demand observed"
+      - name: daily_demand_max
+        description: "Peak hourly demand observed on this date"
+      - name: capacity_limit_p95
+        description: "Estimated capacity based on p95 of historical demand"
+      - name: severity_pct
+        description: "Percentage by which max demand exceeded capacity"
