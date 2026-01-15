@@ -163,14 +163,6 @@ df = load_mart_data()  # Returns a clean pandas DataFrame
 - [ ] Paper visualizations
 - [ ] ICPE 2026 submission
 
----
-
-## 📚 Documentation
-
-- **[Device Setup.md](Device%20Setup.md)** - Full setup guide for new devices (Docker + venv)
-- **[Master Project Doc](Master%20Project%20Doc%20(START%20HERE).md)** - Project roadmap and daily plans
-
----
 
 ## 🔗 Links
 
