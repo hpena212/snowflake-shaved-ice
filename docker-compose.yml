@@ -1,0 +1,41 @@
+# ICPE 2026 Shaved Ice Project - Docker Compose Configuration
+# Run with: docker-compose up
+
+services:
+  shaved-ice:
+    build: .
+    container_name: shaved-ice-project
+    ports:
+      - "8888:8888" # Jupyter Notebook
+    volumes:
+      # Mount project directories for live editing
+      - ./notebooks:/app/notebooks
+      - ./src:/app/src
+      - ./sql:/app/sql
+      - ./data:/app/data
+      - ./figures:/app/figures
+      - ./paper:/app/paper
+      # Mount config files
+      - ./dbt_project.yml:/app/dbt_project.yml
+      - ./profiles.yml:/app/profiles.yml
+    environment:
+      - PYTHONIOENCODING=utf-8
+    working_dir: /app
+    # Keep container running
+    stdin_open: true
+    tty: true
+
+  # Optional: Run dbt commands
+  dbt:
+    build: .
+    container_name: shaved-ice-dbt
+    volumes:
+      - ./sql:/app/sql
+      - ./data:/app/data
+      - ./dbt_project.yml:/app/dbt_project.yml
+      - ./profiles.yml:/app/profiles.yml
+    working_dir: /app
+    entrypoint: [ "dbt" ]
+    command: [ "run", "--profiles-dir", "." ]
+    profiles:
+      - dbt # Only runs when explicitly called with --profile dbt
