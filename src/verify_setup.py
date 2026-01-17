@@ -7,6 +7,8 @@ Verifies: dependencies, folder structure, custom modules, dbt setup
 import sys
 from pathlib import Path
 
+# Define project root relative to this script (src/verify_setup.py -> project_root)
+PROJECT_ROOT = Path(__file__).parent.parent
 
 def check_dependencies():
     """Verify all required packages are installed."""
@@ -56,7 +58,7 @@ def check_folders():
     
     all_exist = True
     for folder in required:
-        if Path(folder).exists():
+        if (PROJECT_ROOT / folder).exists():
             print(f"   ✅ {folder}/")
         else:
             print(f"   ❌ {folder}/ - MISSING")
@@ -80,7 +82,7 @@ def check_dbt_setup():
     
     all_exist = True
     for filepath, description in dbt_files:
-        if Path(filepath).exists():
+        if (PROJECT_ROOT / filepath).exists():
             print(f"   ✅ {filepath}")
         else:
             print(f"   ❌ {filepath} - MISSING ({description})")
@@ -95,7 +97,10 @@ def check_python_modules():
     """Test importing custom modules."""
     print("\n🐍 Checking Python modules...")
     
-    sys.path.insert(0, str(Path('src').absolute()))
+    # Ensure src is in python path
+    src_path = str(PROJECT_ROOT / 'src')
+    if src_path not in sys.path:
+        sys.path.insert(0, src_path)
     
     modules = ['data_loader', 'duckdb_loader', 'forecasting', 'plotting', 'utils']
     all_ok = True
@@ -115,7 +120,7 @@ def check_dataset():
     """Check if dataset has been downloaded."""
     print("\n📊 Checking dataset...")
     
-    dataset_path = Path('data/raw/shavedice-dataset')
+    dataset_path = PROJECT_ROOT / 'data/raw/shavedice-dataset'
     if dataset_path.exists():
         print(f"   ✅ Dataset found at {dataset_path}")
         return True
