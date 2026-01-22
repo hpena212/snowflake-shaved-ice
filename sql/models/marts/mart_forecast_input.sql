@@ -35,10 +35,20 @@ forecast_ready AS (
         demand_lag_7d,
         demand_rolling_7d_avg,
         
+        -- Volatility metrics (from Steven's insights)
+        demand_rolling_7d_std,
+        coef_of_variation,
+        
         -- Safety stock metrics (using z-scores for service levels)
         COALESCE(daily_demand_stddev * 1.65, 0) AS safety_stock_90pct,
         COALESCE(daily_demand_stddev * 1.96, 0) AS safety_stock_95pct,
         COALESCE(daily_demand_stddev * 2.58, 0) AS safety_stock_99pct,
+        
+        -- Total capacity formula: expected demand + buffer (the core insight)
+        COALESCE(demand_rolling_7d_avg + (daily_demand_stddev * 1.96), 0) AS total_capacity,
+        
+        -- Structural break flag (mid-2022 client departure)
+        CASE WHEN date >= '2022-06-01' THEN 1 ELSE 0 END AS is_post_break,
         
         -- Data quality
         hourly_records,

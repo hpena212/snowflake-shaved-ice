@@ -53,15 +53,35 @@ with_time_features AS (
             ORDER BY date
         ) AS demand_lag_7d,
         
-        -- Rolling averages
+        -- Rolling averages ("What's typical over the last week?")
         AVG(daily_demand_total) OVER (
             PARTITION BY region, instance_type
             ORDER BY date 
             ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-        ) AS demand_rolling_7d_avg
+        ) AS demand_rolling_7d_avg,
+        
+        -- Rolling standard deviation ("How much does demand bounce around?")
+        STDDEV(daily_demand_total) OVER (
+            PARTITION BY region, instance_type
+            ORDER BY date 
+            ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+        ) AS demand_rolling_7d_std
 
     FROM daily_agg
+),
+
+-- Add coefficient of variation ("Normalized volatility for comparison across scales")
+with_coef_variation AS (
+    SELECT
+        *,
+        CASE 
+            WHEN demand_rolling_7d_avg > 0 
+            THEN demand_rolling_7d_std / demand_rolling_7d_avg 
+            ELSE 0 
+        END AS coef_of_variation
+
+    FROM with_time_features
 )
 
-SELECT * FROM with_time_features
+SELECT * FROM with_coef_variation
 ORDER BY date, region, instance_type
