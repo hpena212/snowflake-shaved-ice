@@ -2,11 +2,14 @@
 pandas>=2.0.0
 numpy>=1.24.0
 scipy>=1.10.0
+scikit-learn=>1.8.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
+plotly>=6.5.0
 
 # Time Series Analysis
 statsmodels>=0.14.0
+prophet>=1.2.1 
 
 # Data Loading
 pyarrow>=14.0.0
