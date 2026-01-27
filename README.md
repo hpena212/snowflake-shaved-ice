@@ -143,12 +143,7 @@ df = load_mart_data()  # Returns a clean pandas DataFrame
 
 ## 🎯 Research Focus
 
-**Core Question:** Can variance-aware forecasting reduce the cost of capacity misallocation compared to point-forecast methods?
-
-### Sub-questions:
-1. How do demand patterns vary by day of week and region?
-2. What safety stock levels minimize over/under-provisioning?
-3. Can prediction intervals outperform point forecasts for capacity planning?
+**Core Question:** Do simple seasonal time-series models provide materially better demand forecasts than rolling-average baselines for aggregated cloud infrastructure?
 
 ---
 
@@ -158,9 +153,9 @@ df = load_mart_data()  # Returns a clean pandas DataFrame
 - [x] dbt pipeline configured (4 models)
 - [x] Dataset integration
 - [x] Multi-device workflow documented
-- [ ] Variance analysis
-- [ ] Forecasting models
-- [ ] Paper visualizations
+- [x] Variance analysis
+- [x] Forecasting models
+- [x] Paper visualizations
 - [ ] ICPE 2026 submission
 
 
