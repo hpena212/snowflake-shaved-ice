@@ -156,7 +156,7 @@ df = load_mart_data()  # Returns a clean pandas DataFrame
 - [x] Variance analysis
 - [x] Forecasting models
 - [x] Paper visualizations
-- [ ] ICPE 2026 submission
+- [x] ICPE 2026 submission
 
 
 ## 🔗 Links
