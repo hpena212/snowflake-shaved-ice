@@ -1,7 +1,7 @@
 # ICPE 2026 Data Challenge - Shaved Ice Dataset Analysis
 
 **Deadline:** January 28, 2026  
-**Status:** Ready for data exploration
+**Status:** Submitted 🎉
 
 ## Overview
 
