@@ -4,17 +4,14 @@
 **Status:** Submitted 🎉
 
  # Weekly Seasonality in Cloud Demand: Lessons from Snowflake's Shaved Ice Dataset
-      2
-      3 **ICPE 2026 Data Challenge Submission** | Under Peer Review
-      4
-      5 ## The Problem
-      6
-      7 Cloud providers offer steep discounts for long-term capacity commitments — but under-forecasting demand is **2.1x more expensiv
-        e** than over-forecasting. Most capacity planning teams use rolling averages as their baseline forecast. We asked a simple ques
-        tion: *do those rolling averages actually capture what's happening in the data?*
-      8
-      9 They don't. Snowflake's VM demand drops ~25% every weekend like clockwork — a pattern rolling averages structurally cannot capt
-        ure.
+      
+       **ICPE 2026 Data Challenge Submission** | Under Peer Review
+      
+## The Problem
+      
+Cloud providers offer steep discounts for long-term capacity commitments — but under-forecasting demand is **2.1x more expensive** than over-forecasting. Most capacity planning teams use rolling averages as their baseline forecast. We asked a simple ques tion: *do those rolling averages actually capture what's happening in the data?*
+
+They don't. Snowflake's VM demand drops ~25% every weekend like clockwork — a pattern rolling averages structurally cannot capt ure.
 
 ## Overview
 
